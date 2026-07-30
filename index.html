@@ -305,7 +305,7 @@ let startTime=null;
 
 let timer=null;
 
-
+let trips = JSON.parse(localStorage.getItem("trips")) || [];
 
 function startTrip(type){
 
@@ -584,43 +584,65 @@ return x.toString()
 
 }
 
-
-
-
 function endTrip(){
 
+    if(watchID){
 
-if(watchID){
+        navigator.geolocation.clearWatch(watchID);
 
-navigator.geolocation
-.clearWatch(watchID);
+    }
+
+    clearInterval(timer);
+
+
+    let endTime = new Date();
+
+
+    let trip = {
+
+        type: tripType,
+
+        date: new Date().toISOString(),
+
+        startTime: startTime,
+
+        endTime: endTime,
+
+        distance: Number(totalDistance.toFixed(2))
+
+    };
+
+
+    trips.push(trip);
+
+
+    localStorage.setItem(
+        "trips",
+        JSON.stringify(trips)
+    );
+
+
+    updateSummary();
+
+
+    alert(
+        tripType +
+        " trip saved\n\nDistance: " +
+        totalDistance.toFixed(2) +
+        " km"
+    );
+
+
+    tripActive=false;
+
+
+    document.getElementById("activeTrip")
+    .classList.add("hidden");
+
 
 }
 
 
-clearInterval(timer);
-
-
-alert(
-
-tripType+
-" trip complete\n\n"+
-"Distance: "+
-totalDistance.toFixed(2)
-+" km"
-
-);
-
-
-
-tripActive=false;
-
-
-document.getElementById("activeTrip")
-.classList.add("hidden");
-
-
-}
 
 
 
@@ -635,7 +657,100 @@ alert(
 
 }
 
+function updateSummary(){
 
+
+    let businessTotal=0;
+
+    let personalTotal=0;
+
+
+    let currentMonth =
+    new Date().getMonth();
+
+
+    let businessMonth=0;
+
+    let personalMonth=0;
+
+
+
+    trips.forEach(trip=>{
+
+
+        if(trip.type==="Business"){
+
+            businessTotal += trip.distance;
+
+        }
+
+
+        if(trip.type==="Personal"){
+
+            personalTotal += trip.distance;
+
+        }
+
+
+
+        let tripDate =
+        new Date(trip.date);
+
+
+
+        if(tripDate.getMonth()===currentMonth){
+
+
+            if(trip.type==="Business"){
+
+                businessMonth += trip.distance;
+
+            }
+
+
+            if(trip.type==="Personal"){
+
+                personalMonth += trip.distance;
+
+            }
+
+        }
+
+
+    });
+
+
+
+    document.getElementById("businessKm")
+    .innerHTML =
+    "Total: " +
+    businessTotal.toFixed(1)
+    +" km<br>" +
+    "Month: " +
+    businessMonth.toFixed(1)
+    +" km";
+
+
+
+    document.getElementById("personalKm")
+    .innerHTML =
+    "Total: " +
+    personalTotal.toFixed(1)
+    +" km<br>" +
+    "Month: " +
+    personalMonth.toFixed(1)
+    +" km";
+
+
+}
+
+
+
+window.onload=function(){
+
+    updateSummary();
+
+}
 
 </script>
 
