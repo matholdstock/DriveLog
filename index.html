@@ -90,9 +90,9 @@ button{
 
 #export-btn,
 #clear-btn{
-
+    color: black;
     width:100%;
-    padding:10px;
+    padding:20px;
     margin-top:15px;
     border:none;
     border-radius:18px;
@@ -178,13 +178,24 @@ input, select{
 
 
 <body>
-    <header>
-        <h1>DriveLog</h1>
-        <p>Vehicle Milage Tracker</p>
-    </header>
-    <!--Status-->
-    <div id="tripStatus" class="activeBanner hidden">
+    <div class="card">
+        <header>
+            <div id="tripStatus" class="activeBanner hidden">
 
+            </div>
+
+            <h1>DriveLog</h1>
+            <p>Vehicle Milage Tracker</p>
+        </header>
+        <!--Status-->
+        
+    </div>
+    
+    <!--Ready To Drive-->
+    <div class="card">
+        <h2>Ready to Drive</h2>
+        <button class="business" onclick="startTrip('Business')">Start Business Trip</button>
+        <button class="personal" onclick="startTrip('Personal')">Start Personal Trip</button>
     </div>
 
     <!--Summary-->
@@ -199,12 +210,7 @@ input, select{
             </div>
         </div>
     </div>
-
-    <div class="card">
-        <h2>Ready to Drive</h2>
-        <button class="business" onclick="startTrip('Business')">🚗 Start Business Trip</button>
-        <button class="personal" onclick="startTrip('Personal')">🏠 Start Personal Trip</button>
-    </div>
+    
     
     <div id="activeTrip" class="card hidden">
         <h2 id="tripTitle">Trip Active</h2>
@@ -224,7 +230,7 @@ input, select{
 
         </div>
         <p class="status">Duration</p>
-        <button class="stop" onclick="endTrip()">🛑 End Trip</button>
+        <button class="stop" onclick="endTrip()">End Trip</button>
     </div>
     <div class="card">
         <h2>Trip History</h2>
