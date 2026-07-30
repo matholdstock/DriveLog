@@ -33,17 +33,25 @@ header{
     padding:14px;
 }
 
-header h1{
-    margin:0;
-    font-size:34px;
-}
-
 .card{
     background:white;
     margin:15px;
     padding:20px;
     border-radius:20px;
     box-shadow:0 3px 10px rgba(0,0,0,.12);
+}
+.heading-card{
+    padding: 10px;
+    margin: 10px 15px;
+}
+
+.heading-card h1{
+    margin: 0;
+    font-size: 28px;
+}
+
+.heading-card p{
+    margin: 5px 0 0 0;
 }
 
 .stats{
@@ -178,13 +186,13 @@ input, select{
 
 
 <body>
-    <div class="card">
+    <div class="card heading-card">
         <header>
             <div id="tripStatus" class="activeBanner hidden">
 
             </div>
 
-            <h1>DriveLog</h1>
+            <h1>Mat's DriveLog</h1>
             <p>Vehicle Milage Tracker</p>
         </header>
         <!--Status-->
@@ -203,10 +211,10 @@ input, select{
         <h2>Summary</h2>
         <div class="stats">
             <div>
-                <span>Business</span><strong id="businessKm">0 km</strong>
+                <span>Business km</span><strong id="businessKm">0 km</strong>
             </div>
             <div>
-                <span>Personal</span><strong id="personalKm">0 km</strong>
+                <span>Personal km</span><strong id="personalKm">0 km</strong>
             </div>
         </div>
     </div>
@@ -217,8 +225,6 @@ input, select{
         <div class="value" id="distance">0.00 km
 
         </div>
-
-        
         
         <p class="status">Distance</p>
         <div class="value" id="speed">0 km/h
@@ -247,6 +253,8 @@ input, select{
             </select>
             <label>Distance (km)</label>
             <input id="editDistance" type="number" step="0.1">
+            <label>Trip Date</label>
+            <input id="editDate" type="date">
             <button onclick="saveEdit()" class="business">Save Changes</button>
             <button onclick="cancelEdit()" class="stop">Cancel</button>
         </div>
@@ -596,8 +604,11 @@ function endTrip(){
     tripActive=false;
 
 
-    document.getElementById("activeTrip")
-    .classList.add("hidden");
+    document.getElementById("activeTrip").classList.add("hidden");
+
+    document.getElementById("tripStatus").classList.add("hidden");
+
+    document.getElementById("tripStatus").innerHTML = "";
 
 
 }
@@ -679,10 +690,9 @@ function updateSummary(){
     .innerHTML =
     "Total: " +
     businessTotal.toFixed(1)
-    +" km<br>" +
+    +"<br>" +
     "Month: " +
-    businessMonth.toFixed(1)
-    +" km";
+    businessMonth.toFixed(1);
 
 
 
@@ -690,10 +700,9 @@ function updateSummary(){
     .innerHTML =
     "Total: " +
     personalTotal.toFixed(1)
-    +" km<br>" +
+    +" <br>" +
     "Month: " +
-    personalMonth.toFixed(1)
-    +" km";
+    personalMonth.toFixed(1);
 
 
 }
@@ -925,6 +934,11 @@ function editTrip(index){
 
     let trip = trips[index];
 
+    document.getElementById("editDate").value =
+    new Date(trip.date)
+    .toISOString()
+    .split("T")[0];
+
 
     document.getElementById("editType").value =
     trip.type;
@@ -955,6 +969,13 @@ function saveEdit(){
     Number(
         document.getElementById("editDistance").value
     );
+
+    let selectedDate =
+    document.getElementById("editDate").value;
+
+
+    trips[editIndex].date =
+    new Date(selectedDate).toISOString();
 
 
     localStorage.setItem(
