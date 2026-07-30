@@ -159,14 +159,6 @@ button{
     </header>
     
     <div class="card">
-        <h2>Vehicle Profile</h2>
-        <label>Driver</label>
-        <input id="driverName" placeholder="Enter driver">
-        <label>Vehicle</label>
-        <input id="vehicleName" placeholder="Enter vehicle">
-        <button onclick="saveProfile()" style="background:#5856d6;color:white;">Save Profile</button>
-    </div>    
-    <div class="card">
         <h2>Today's Summary</h2>
         <div class="stats">
             <div>
@@ -198,6 +190,9 @@ button{
 
         </div>
     </div>
+
+    <button onclick="clearTrips()" style="background:#ff9500;color:white;">🗑 Clear Trip Data</button>
+
     <p class="status">Distance</p>
     
     <div class="value" id="speed">0 km/h
@@ -233,8 +228,7 @@ let startTime=null;
 let timer=null;
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
-let driverName = localStorage.getItem("driverName") || "";
-let vehicleName = localStorage.getItem("vehicleName") || "";
+
 
 function startTrip(type){
 
@@ -837,29 +831,31 @@ function exportCSV(){
 
 }
 
-function saveProfile(){
+function clearTrips(){
 
-    driverName =
-    document.getElementById("driverName").value;
-
-
-    vehicleName =
-    document.getElementById("vehicleName").value;
-
-
-    localStorage.setItem(
-        "driverName",
-        driverName
+    let confirmDelete =
+    confirm(
+        "Delete all saved trips?"
     );
 
 
-    localStorage.setItem(
-        "vehicleName",
-        vehicleName
-    );
+    if(confirmDelete){
+
+        trips = [];
 
 
-    alert("Profile saved");
+        localStorage.removeItem("trips");
+
+
+        updateSummary();
+
+
+        showHistory();
+
+
+        alert("Trip data cleared");
+
+    }
 
 }
 
@@ -875,4 +871,4 @@ window.onload=function(){
 
 </body>
 
-</html>
+</html>>
