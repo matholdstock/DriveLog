@@ -176,6 +176,9 @@ button{
     <button class="personal" onclick="startTrip('Personal')">🏠 Start Personal Trip</button>
     
     <button onclick="simulateTrip()" style="background:#555;color:white;">🧪 Simulate 25 km Trip</button>
+
+    <button onclick="exportCSV()" style="background:#5856d6;color:white;">📄 Export CSV</button>
+
 </div>
 
 <div id="activeTrip" class="card hidden">
@@ -208,7 +211,6 @@ button{
 </div>
 
 <script>
-alert("javaScript is running");
 
 let tripActive=false;
 
@@ -736,6 +738,93 @@ function showHistory(){
 
 
     });
+
+
+}
+
+function exportCSV(){
+
+    if(trips.length === 0){
+
+        alert("No trips to export");
+
+        return;
+
+    }
+
+
+    let csv = 
+    "Date,Type,Start Time,End Time,Distance (km)\n";
+
+
+    trips.forEach(trip=>{
+
+
+        let date =
+        new Date(trip.date);
+
+
+        let start =
+        new Date(trip.startTime);
+
+
+        let end =
+        new Date(trip.endTime);
+
+
+
+        csv +=
+
+        date.toLocaleDateString()
+        +","+
+
+        trip.type
+        +","+
+
+        start.toLocaleTimeString()
+        +","+
+
+        end.toLocaleTimeString()
+        +","+
+
+        trip.distance.toFixed(2)
+
+        +"\n";
+
+
+    });
+
+
+
+    let blob =
+    new Blob(
+        [csv],
+        {
+            type:"text/csv"
+        }
+    );
+
+
+    let url =
+    URL.createObjectURL(blob);
+
+
+
+    let link =
+    document.createElement("a");
+
+
+    link.href=url;
+
+
+    link.download=
+    "DriveLog_Report.csv";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(url);
 
 
 }
