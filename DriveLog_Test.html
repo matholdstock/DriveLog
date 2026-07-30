@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DriveLog</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;
+    background:#f2f2f7;
+
+}
+
+
+.app{
+
+    max-width:500px;
+    margin:auto;
+    min-height:100vh;
+
+}
+
+
+header{
+
+    text-align:center;
+    padding:20px;
+
+}
+
+
+header h1{
+
+    margin:0;
+    font-size:34px;
+
+}
+
+
+.card{
+
+    background:white;
+    margin:15px;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
+
+}
+
+
+.stats{
+
+    display:flex;
+    justify-content:space-around;
+    text-align:center;
+
+}
+
+
+.stats span{
+
+    display:block;
+    color:#777;
+
+}
+
+
+.stats strong{
+
+    font-size:24px;
+
+}
+
+
+button{
+
+    width:100%;
+    padding:20px;
+    margin-top:15px;
+    border:none;
+    border-radius:18px;
+    font-size:20px;
+    font-weight:bold;
+
+}
+
+
+.business{
+
+    background:#34c759;
+    color:white;
+
+}
+
+
+.personal{
+
+    background:#007aff;
+    color:white;
+
+}
+
+
+.stop{
+
+    background:#ff3b30;
+    color:white;
+
+}
+
+
+.hidden{
+
+    display:none;
+
+}
+
+
+.value{
+
+    font-size:28px;
+    font-weight:bold;
+    text-align:center;
+
+}
+
+
+.status{
+
+    text-align:center;
+    color:#555;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<header>
+
+<h1>DriveLog</h1>
+
+<p>Manual Trip Tracking</p>
+
+</header>
+
+
+
+<div class="card">
+
+
+<h2>Today's Summary</h2>
+
+
+<div class="stats">
+
+
+<div>
+
+<span>Business</span>
+
+<strong id="businessKm">
+0 km
+</strong>
+
+</div>
+
+
+<div>
+
+<span>Personal</span>
+
+<strong id="personalKm">
+0 km
+</strong>
+
+</div>
+
+
+</div>
+
+
+<button class="business" onclick="startTrip('Business')">
+
+🚗 Start Business Trip
+
+</button>
+
+
+<button class="personal" onclick="startTrip('Personal')">
+
+🏠 Start Personal Trip
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div id="activeTrip" class="card hidden">
+
+
+<h2 id="tripTitle">
+Trip Active
+</h2>
+
+
+<div class="value" id="distance">
+
+0.00 km
+
+</div>
+
+
+<p class="status">
+
+Distance
+
+</p>
+
+
+<div class="value" id="speed">
+
+0 km/h
+
+</div>
+
+
+<p class="status">
+
+Speed
+
+</p>
+
+
+
+<div class="value" id="timer">
+
+00:00:00
+
+</div>
+
+
+<p class="status">
+
+Duration
+
+</p>
+
+
+
+<button class="stop" onclick="endTrip()">
+
+🛑 End Trip
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<script>
+alert("javaScript is running");
+
+let tripActive=false;
+
+let tripType="";
+
+let watchID=null;
+
+let lastPosition=null;
+
+let totalDistance=0;
+
+let startTime=null;
+
+let timer=null;
+
+
+
+function startTrip(type){
+
+
+if(tripActive){
+
+return;
+
+}
+
+
+tripActive=true;
+
+tripType=type;
+
+
+document.getElementById("activeTrip")
+.classList.remove("hidden");
+
+
+document.getElementById("tripTitle")
+.innerHTML=
+type+" Trip";
+
+
+
+totalDistance=0;
+
+lastPosition=null;
+
+
+startTime=new Date();
+
+
+startTimer();
+
+
+if(!navigator.geolocation){
+
+alert("GPS not supported");
+
+return;
+
+}
+
+
+
+watchID=navigator.geolocation.watchPosition(
+
+locationUpdate,
+
+locationError,
+
+{
+
+enableHighAccuracy:true,
+
+maximumAge:0,
+
+timeout:10000
+
+}
+
+);
+
+
+}
+
+
+
+
+function locationUpdate(position){
+
+
+let lat =
+position.coords.latitude;
+
+
+let lon =
+position.coords.longitude;
+
+
+let speed =
+position.coords.speed;
+
+
+
+if(lastPosition){
+
+
+let distance =
+calcDistance(
+
+lastPosition.lat,
+
+lastPosition.lon,
+
+lat,
+
+lon
+
+);
+
+
+
+/*
+
+Ignore GPS drift
+
+Only count movement if:
+
+- more than 5 meters
+
+- moving faster than 5 km/h
+
+*/
+
+
+let speedKmh =
+speed ? speed*3.6 : 0;
+
+
+
+if(distance > 0.005 && speedKmh > 5){
+
+
+totalDistance += distance;
+
+
+document.getElementById("distance")
+.innerHTML =
+totalDistance.toFixed(2)
++" km";
+
+
+}
+
+
+}
+
+
+
+lastPosition={
+
+lat:lat,
+
+lon:lon
+
+};
+
+
+
+if(speed){
+
+
+document.getElementById("speed")
+.innerHTML =
+(speed*3.6)
+.toFixed(0)
++" km/h";
+
+
+}
+
+
+
+}
+
+
+
+
+function calcDistance(lat1,lon1,lat2,lon2){
+
+
+const R=6371;
+
+
+let dLat=
+(lat2-lat1)
+*Math.PI/180;
+
+
+let dLon=
+(lon2-lon1)
+*Math.PI/180;
+
+
+let a=
+
+Math.sin(dLat/2)*
+Math.sin(dLat/2)
+
++
+
+Math.cos(lat1*Math.PI/180)
+
+*
+
+Math.cos(lat2*Math.PI/180)
+
+*
+
+Math.sin(dLon/2)
+
+*
+
+Math.sin(dLon/2);
+
+
+
+let c=
+2*Math.atan2(
+Math.sqrt(a),
+Math.sqrt(1-a)
+);
+
+
+
+return R*c;
+
+
+}
+
+
+
+
+function startTimer(){
+
+
+timer=setInterval(()=>{
+
+
+let seconds=
+Math.floor(
+(new Date()-startTime)/1000
+);
+
+
+
+let h=
+Math.floor(seconds/3600);
+
+
+let m=
+Math.floor(
+(seconds%3600)/60
+);
+
+
+let s=
+seconds%60;
+
+
+
+document.getElementById("timer")
+.innerHTML=
+
+pad(h)+":"+
+pad(m)+":"+
+pad(s);
+
+
+
+},1000);
+
+
+}
+
+
+
+
+function pad(x){
+
+return x.toString()
+.padStart(2,"0");
+
+}
+
+
+
+
+function endTrip(){
+
+
+if(watchID){
+
+navigator.geolocation
+.clearWatch(watchID);
+
+}
+
+
+clearInterval(timer);
+
+
+alert(
+
+tripType+
+" trip complete\n\n"+
+"Distance: "+
+totalDistance.toFixed(2)
++" km"
+
+);
+
+
+
+tripActive=false;
+
+
+document.getElementById("activeTrip")
+.classList.add("hidden");
+
+
+}
+
+
+
+
+
+function locationError(error){
+
+alert(
+"GPS Error: "
++error.message
+);
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
