@@ -157,19 +157,25 @@ button{
         <h1>DriveLog</h1>
         <p>Manual Trip Tracking</p>
     </header>
-
-
-
-<div class="card">
-    <h2>Today's Summary</h2>
-    <div class="stats">
-        <div>
-            <span>Business</span><strong id="businessKm">0 km</strong>
+    
+    <div class="card">
+        <h2>Vehicle Profile</h2>
+        <label>Driver</label>
+        <input id="driverName" placeholder="Enter driver">
+        <label>Vehicle</label>
+        <input id="vehicleName" placeholder="Enter vehicle">
+        <button onclick="saveProfile()" style="background:#5856d6;color:white;">Save Profile</button>
+    </div>    
+    <div class="card">
+        <h2>Today's Summary</h2>
+        <div class="stats">
+            <div>
+                <span>Business</span><strong id="businessKm">0 km</strong>
+            </div>
+            <div>
+                <span>Personal</span><strong id="personalKm">0 km</strong>
+            </div>
         </div>
-        <div>
-            <span>Personal</span><strong id="personalKm">0 km</strong>
-        </div>
-    </div>
     
     <button class="business" onclick="startTrip('Business')">🚗 Start Business Trip</button>
 
@@ -227,6 +233,8 @@ let startTime=null;
 let timer=null;
 
 let trips = JSON.parse(localStorage.getItem("trips")) || [];
+let driverName = localStorage.getItem("driverName") || "";
+let vehicleName = localStorage.getItem("vehicleName") || "";
 
 function startTrip(type){
 
@@ -826,6 +834,32 @@ function exportCSV(){
 
     URL.revokeObjectURL(url);
 
+
+}
+
+function saveProfile(){
+
+    driverName =
+    document.getElementById("driverName").value;
+
+
+    vehicleName =
+    document.getElementById("vehicleName").value;
+
+
+    localStorage.setItem(
+        "driverName",
+        driverName
+    );
+
+
+    localStorage.setItem(
+        "vehicleName",
+        vehicleName
+    );
+
+
+    alert("Profile saved");
 
 }
 
