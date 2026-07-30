@@ -211,7 +211,9 @@ button{
 🏠 Start Personal Trip
 
 </button>
-
+<button onclick="simulateTrip()" style="background:#555;color:white;">
+🧪 Simulate 25 km Trip
+</button>
 
 </div>
 
@@ -374,9 +376,6 @@ timeout:10000
 
 }
 
-
-
-
 function locationUpdate(position){
 
 
@@ -474,9 +473,6 @@ document.getElementById("speed")
 
 }
 
-
-
-
 function calcDistance(lat1,lon1,lat2,lon2){
 
 
@@ -529,9 +525,6 @@ return R*c;
 
 }
 
-
-
-
 function startTimer(){
 
 
@@ -573,9 +566,6 @@ pad(s);
 
 
 }
-
-
-
 
 function pad(x){
 
@@ -641,12 +631,6 @@ function endTrip(){
 
 
 }
-
-
-
-
-
-
 
 function locationError(error){
 
@@ -744,7 +728,40 @@ function updateSummary(){
 
 }
 
+function simulateTrip(){
 
+    let fakeTrip = {
+
+        type:"Business",
+
+        date:new Date().toISOString(),
+
+        startTime:new Date(),
+
+        endTime:new Date(),
+
+        distance:25
+
+    };
+
+
+    trips.push(fakeTrip);
+
+
+    localStorage.setItem(
+        "trips",
+        JSON.stringify(trips)
+    );
+
+
+    updateSummary();
+
+
+    alert(
+        "Test trip added\n\n25 km Business"
+    );
+
+}
 
 window.onload=function(){
 
